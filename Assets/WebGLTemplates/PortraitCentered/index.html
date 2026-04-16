@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+  <title>{{{ PRODUCT_NAME }}}</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page-bg: #000;
+      --loading-fg: #fff;
+      --loading-accent: rgba(255, 255, 255, 0.18);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--page-bg);
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #unity-container {
+      position: relative;
+      width: min(100vw, calc(100vh * 9 / 16));
+      height: min(100vh, calc(100vw * 16 / 9));
+      aspect-ratio: 9 / 16;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: {{{ BACKGROUND_COLOR }}};
+    }
+
+    #unity-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--loading-fg);
+      background: rgba(0, 0, 0, 0.55);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    #unity-loading-bar {
+      width: min(70%, 260px);
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--loading-accent);
+    }
+
+    #unity-loading-fill {
+      width: 0%;
+      height: 100%;
+      background: #ffffff;
+      transition: width 120ms linear;
+    }
+
+    #unity-warning {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      padding: 10px 12px;
+      color: #fff;
+      background: rgba(120, 0, 0, 0.85);
+      font-size: 12px;
+      line-height: 1.4;
+      display: none;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <div id="unity-container">
+    <canvas id="unity-canvas" width="{{{ WIDTH }}}" height="{{{ HEIGHT }}}" tabindex="-1"></canvas>
+    <div id="unity-loading">
+      <div>Loading</div>
+      <div id="unity-loading-bar">
+        <div id="unity-loading-fill"></div>
+      </div>
+    </div>
+    <div id="unity-warning"></div>
+  </div>
+
+  <script>
+    const container = document.querySelector("#unity-container");
+    const canvas = document.querySelector("#unity-canvas");
+    const loading = document.querySelector("#unity-loading");
+    const loadingFill = document.querySelector("#unity-loading-fill");
+    const warningBanner = document.querySelector("#unity-warning");
+
+    const buildUrl = "Build";
+    const loaderUrl = `${buildUrl}/{{{ LOADER_FILENAME }}}`;
+    const config = {
+      dataUrl: `${buildUrl}/{{{ DATA_FILENAME }}}`,
+      frameworkUrl: `${buildUrl}/{{{ FRAMEWORK_FILENAME }}}`,
+      codeUrl: `${buildUrl}/{{{ CODE_FILENAME }}}`,
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "{{{ COMPANY_NAME }}}",
+      productName: "{{{ PRODUCT_NAME }}}",
+      productVersion: "{{{ PRODUCT_VERSION }}}",
+      matchWebGLToCanvasSize: true,
+      devicePixelRatio: window.devicePixelRatio || 1,
+      showBanner: (message, type) => {
+        warningBanner.style.display = "block";
+        warningBanner.textContent = message;
+        warningBanner.style.background = type === "error" ? "rgba(120, 0, 0, 0.85)" : "rgba(120, 90, 0, 0.85)";
+        if (type !== "error") {
+          window.setTimeout(() => {
+            warningBanner.style.display = "none";
+          }, 5000);
+        }
+      }
+    };
+
+    function resizeContainer() {
+      const targetAspect = 9 / 16;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let width = Math.min(viewportWidth, viewportHeight * targetAspect);
+      let height = width / targetAspect;
+
+      if (height > viewportHeight) {
+        height = viewportHeight;
+        width = height * targetAspect;
+      }
+
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+    }
+
+    resizeContainer();
+    window.addEventListener("resize", resizeContainer);
+
+    const script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        loadingFill.style.width = `${Math.round(progress * 100)}%`;
+      }).then(() => {
+        loading.style.display = "none";
+      }).catch((message) => {
+        warningBanner.style.display = "block";
+        warningBanner.textContent = message;
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
