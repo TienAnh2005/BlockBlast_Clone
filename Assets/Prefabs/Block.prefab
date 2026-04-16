@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 0}
   blocks: {fileID: 0}
-  cellPrefab: {fileID: 5472008882259310164, guid: 29dd319363c07b3418e0295a36cfaeda, type: 3}
+  cellPrefab: {fileID: 8720829889844022256, guid: 3bf87a834be997a4bb6b35e8df847839, type: 3}
 --- !u!61 &1779201507060419543
 BoxCollider2D:
   m_ObjectHideFlags: 0

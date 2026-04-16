@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -20,8 +17,30 @@ public class Board : MonoBehaviour
     private readonly List<int> fullLineColumns = new();
     private readonly List<int> fullLineRows = new();
 
+    private void Awake()
+    {
+        if (cellsTransform == null)
+        {
+            var existingCellsTransform = transform.Find("Cells");
+            if (existingCellsTransform == null)
+            {
+                existingCellsTransform = new GameObject("Cells").transform;
+                existingCellsTransform.SetParent(transform, false);
+            }
+
+            cellsTransform = existingCellsTransform;
+        }
+    }
+
     private void Start()
     {
+        if (cellPrefab == null)
+        {
+            Debug.LogError("Board is missing a Cell prefab reference.", this);
+            enabled = false;
+            return;
+        }
+
         for (var r = 0; r < Size; ++r)
         {
             for (var c = 0; c < Size; ++c)
@@ -149,6 +168,12 @@ public class Board : MonoBehaviour
 
         ClearFullLineColumns();
         ClearFullLineRows();
+
+        var clearedLineCount = fullLineColumns.Count + fullLineRows.Count;
+        if (clearedLineCount > 0 && ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.AddScore(clearedLineCount * ScoreManager.Instance.PointsPerClearedLine);
+        }
     }
 
     private void FullLineColumns(int fromColumn, int toColumnExclusive)
@@ -331,9 +356,9 @@ public class Board : MonoBehaviour
         var polyominoRows = polyomino.GetLength(0);
         var polyominoColumns = polyomino.GetLength(1);
         
-        for (var r = 0; r < Size - polyominoRows; ++r)
+        for (var r = 0; r <= Size - polyominoRows; ++r)
         {
-            for (var c = 0; c < Size - polyominoColumns; ++c)
+            for (var c = 0; c <= Size - polyominoColumns; ++c)
             {
                 if (CheckPlace(c, r, polyominoColumns, polyominoRows, polyomino) == true)
                 {

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -39,6 +38,13 @@ public class Block : MonoBehaviour
     }
     public void Initialize()
     {
+        if (cellPrefab == null)
+        {
+            Debug.LogError($"{name} is missing a Cell prefab reference.", this);
+            enabled = false;
+            return;
+        }
+
         for (var r = 0; r < Size; ++r)
         {
             for (var c = 0; c < Size; ++c)
