@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class ScoreManager : MonoBehaviour
     private const string HighScoreKey = "HighScore";
 
     public static ScoreManager Instance { get; private set; }
+    public event Action<int> ScoreChanged;
 
     [SerializeField] private TMP_Text currentScoreText;
     [SerializeField] private TMP_Text highScoreText;
@@ -14,7 +16,14 @@ public class ScoreManager : MonoBehaviour
     private int currentScore;
     private int highScore;
 
+    public int CurrentScore => currentScore;
+    public int HighScore => highScore;
     public int PointsPerClearedLine => pointsPerClearedLine;
+
+    public static int GetStoredHighScore()
+    {
+        return PlayerPrefs.GetInt(HighScoreKey, 0);
+    }
 
     private void Awake()
     {
@@ -26,7 +35,7 @@ public class ScoreManager : MonoBehaviour
 
         Instance = this;
 
-        highScore = PlayerPrefs.GetInt(HighScoreKey, 0);
+        highScore = GetStoredHighScore();
         RefreshUI();
     }
 
@@ -47,6 +56,14 @@ public class ScoreManager : MonoBehaviour
         }
 
         RefreshUI();
+        ScoreChanged?.Invoke(currentScore);
+    }
+
+    public void ResetCurrentScore()
+    {
+        currentScore = 0;
+        RefreshUI();
+        ScoreChanged?.Invoke(currentScore);
     }
 
     private void RefreshUI()

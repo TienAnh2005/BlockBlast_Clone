@@ -8,6 +8,7 @@ public class GameOverManager : MonoBehaviour
 {
     [SerializeField] private Blocks blocks;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private UIPopupController gameOverPopup;
     [SerializeField] private Button restartButton;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text restartButtonText;
@@ -31,15 +32,23 @@ public class GameOverManager : MonoBehaviour
 
         if (gameOverPanel != null)
         {
-            gameOverPanel.SetActive(false);
+            gameOverPopup = EnsurePopupController();
+            if (gameOverPopup != null)
+            {
+                gameOverPopup.HideImmediately();
+            }
+            else
+            {
+                gameOverPanel.SetActive(false);
+            }
         }
 
-        if (titleText != null)
+        if (titleText != null && string.IsNullOrWhiteSpace(titleText.text))
         {
             titleText.text = "NO SPACE LEFT!";
         }
 
-        if (restartButtonText != null)
+        if (restartButtonText != null && string.IsNullOrWhiteSpace(restartButtonText.text))
         {
             restartButtonText.text = "PLAY";
         }
@@ -96,6 +105,11 @@ public class GameOverManager : MonoBehaviour
             return false;
         }
 
+        if (board.HasForcedGameOver)
+        {
+            return true;
+        }
+
         if (polyominoIndexes.Length != blockEntries.Length)
         {
             return false;
@@ -126,7 +140,14 @@ public class GameOverManager : MonoBehaviour
 
         if (gameOverPanel != null)
         {
-            gameOverPanel.SetActive(true);
+            if (gameOverPopup != null)
+            {
+                gameOverPopup.OpenPopup();
+            }
+            else
+            {
+                gameOverPanel.SetActive(true);
+            }
         }
 
         if (blocks != null)
@@ -159,5 +180,26 @@ public class GameOverManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private UIPopupController EnsurePopupController()
+    {
+        if (gameOverPanel == null)
+        {
+            return null;
+        }
+
+        if (gameOverPopup == null)
+        {
+            gameOverPopup = gameOverPanel.GetComponent<UIPopupController>();
+        }
+
+        if (gameOverPopup == null)
+        {
+            gameOverPopup = gameOverPanel.AddComponent<UIPopupController>();
+        }
+
+        gameOverPopup.Configure();
+        return gameOverPopup;
     }
 }

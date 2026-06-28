@@ -1,0 +1,744 @@
+\documentclass[a4paper,12pt]{report}
+
+% ========================
+% Packages
+% ========================
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{float}
+\usepackage{tocloft}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
+\usepackage{array}
+\usepackage{placeins}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usetikzlibrary{arrows.meta, positioning}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, shadows}
+
+\renewcommand{\chaptername}{}
+
+\titleformat{\chapter}[hang]
+{\Huge\bfseries}
+{\thechapter.}
+{0.5em}
+{}
+
+\titlespacing*{\chapter}
+{0pt}
+{-40pt}
+{20pt}
+
+
+% Định nghĩa phong cách cho các khối
+\tikzset{
+    block/.style={
+        rectangle, 
+        draw=blue!70, 
+        fill=blue!5, 
+        text width=2.2cm, 
+        align=center, 
+        rounded corners, 
+        minimum height=1.2cm, 
+        thick,
+        drop shadow, % Thêm đổ bóng cho đẹp
+        font=\small\sffamily\bfseries
+    },
+    arrow/.style={
+        -{Stealth[scale=1.2]}, 
+        line width=1pt, 
+        gray!80
+    }
+}
+
+% Cho phép đánh số đến cấp 4 (sub-sub-section)
+\setcounter{secnumdepth}{3}
+
+% (Tuỳ chọn) Nếu bạn muốn nó hiện cả trong Mục lục thì thêm dòng này:
+\setcounter{tocdepth}{3}
+
+
+% ========================
+% Header / Footer
+% ========================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage}
+
+% ========================
+% Code style
+% ========================
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    numbers=left,
+    numbersep=5pt,
+    showstringspaces=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+% ========================
+% TITLE PAGE (GROUP PROJECT)
+% ========================
+\thispagestyle{empty}
+
+
+
+\begin{titlepage}
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+    \draw[line width=2pt]
+        ($(current page.south west)+(0.5in,0.5in)$)
+        rectangle
+        ($(current page.north east)-(0.5in,0.5in)$);
+\end{tikzpicture}
+
+\vspace*{0.5cm}
+
+\begin{center}
+
+{\large \textbf{UNIVERSITY OF SCIENCE AND TECHNOLOGY OF HANOI}}\\[0.2cm]
+{\large \textbf{VIETNAM FRANCE UNIVERSITY}}\\[1.2cm]
+
+\includegraphics[width=0.35\textwidth]{Logo Trường Đại học Khoa học và Công nghệ Hà Nội VN France University.png}\\[1.2cm]
+
+{\large Research and Development}\\[0.3cm]
+
+{\Huge \textbf{BACHELOR THESIS}}\\[1.2cm]
+
+{\large By}\\[0.3cm]
+
+{\Large \textbf{Luu Nguyen Tien Anh (23BI14010)}}\\[0.2cm]
+
+{\large \textbf{Information and Communication Technology}}\\[1.2cm]
+
+{\large Title:}\\[0.3cm]
+
+{\Large \textbf{Enhanced 2D Block Puzzle Featuring Strategic Elements for Mobile}}\\[1.5cm]
+
+\begin{tabular}{rl}
+\textbf{External supervisor:} & Nguyen Dang Bao Long \\
+\textbf{Internal supervisor:} & Huynh Vinh Nam \\
+\end{tabular}
+
+
+\vfill
+
+Ha Noi, 2026
+
+\end{center}
+
+\end{titlepage}
+
+\vspace{0.7cm}
+\tableofcontents
+\clearpage
+
+\listoffigures
+
+\clearpage
+
+\listoftables
+\clearpage
+
+\clearpage
+
+% ========================
+% Abstract
+% ========================
+\chapter*{ABSTRACT}
+\addcontentsline{toc}{chapter}{ABSTRACT}
+This project presents a 2D mobile block puzzle game inspired by the gameplay mechanics of Block Blast. The objective is to strategically place block pieces on a grid to complete rows or columns, clear spaces, and achieve level-specific goals. Unlike traditional endless puzzle games, the proposed game incorporates a structured level system, providing players with progressive challenges and increasing difficulty throughout gameplay.
+
+To enhance engagement and strategic depth, the game introduces various special blocks and unique gameplay mechanics that require players to carefully plan their moves. These special elements create diverse puzzle scenarios and encourage critical thinking, problem-solving, and decision-making skills. The level-based progression system offers clear objectives, rewards, and a sense of accomplishment, improving long-term player retention.
+
+The game is developed for mobile platforms with an intuitive user interface and optimized touch controls to ensure accessibility and smooth gameplay. Visual effects, animations, and audio feedback are integrated to provide an enjoyable and immersive gaming experience. The combination of classic block puzzle mechanics, special block features, and structured progression aims to deliver a challenging yet entertaining experience for casual and puzzle game enthusiasts.
+
+Keywords: 2D mobile game, block puzzle game, Block Blast-inspired gameplay, special blocks, level system, puzzle-solving, mobile entertainment.
+
+
+\clearpage
+
+
+% ========================
+% Acknowledgements
+% ========================
+\chapter*{ACKNOWLEDGEMENTS}
+\addcontentsline{toc}{chapter}{ACKNOWLEDGEMENTS}
+I would like to show my deepest appreciation to those who without their help, this report would not have been accomplished.
+
+First and foremost, I would like to express my sincere appreciation to Mr. Nguyen Dang Bao Long, my external supervisor, for his massive assistance and support during the entire process. His knowledge and desire to help have been priceless in facing the complex procedures involved in game production. I am grateful for his educated guidance, which has significantly enhanced the quality and depth of my study.
+
+I also wish to acknowledge my internal supervisor, Mr. Huynh Vinh Nam for his support and help in completing the procedures for my thesis. His advice and encouragement have been extremely valuable especially when it comes to thesis writing. His knowledge has greatly improved the clarity and structure of my work.
+
+I would also like to thank my friends for their faith in what I can do and their words of encouragement. Their support at difficult times has been the foundation behind my perseverance and dedication to this project.
+
+Finally, I want to say my most sincere thanks to my family for their endless love and support throughout this journey. Their encouragement and compassion have given me the motivation and strength to overcome challenges and obstacles to pursue my academic goals.
+
+\clearpage
+%---------
+%chapter 1
+\chapter{Introduction}
+\section{Context}
+\textbf{What is a " Mobile Puzzle Game" ?}
+\\A Mobile Puzzle Game is a genre of games that challenges players to solve problems, think strategically, and complete objectives through logical decision-making. Players are often required to manipulate game elements, recognize patterns, and plan their moves carefully to overcome increasingly difficult challenges. These games typically focus on puzzle-solving mechanics, achieving level-based goals, earning rewards, and improving scores while providing an engaging and entertaining experience. Mobile puzzle games are designed with intuitive controls and progressive difficulty to ensure accessibility for both casual and dedicated players.
+Examples include the "Monument Valley" and "Candy Crush Saga"
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1\linewidth]{Candy Crush.jpg}
+    \caption{Candy Crush Saga}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\section{Objectives}
+
+The problem addressed in this thesis is the development of a casual puzzle game inspired by the Block Blast genre. The game aims to provide an engaging and strategic gameplay experience by combining simple drag-and-drop mechanics with progressively challenging objectives. The primary objectives of this thesis are as follows:
+
+Develop a puzzle game that allows players to place blocks on a game board and clear rows or columns to earn points and progress through the game.
+
+Implement two gameplay modes, including Classic Mode and Adventure Mode, to provide different challenges and increase player engagement. In Classic Mode, players attempt to achieve the highest possible score before no valid moves remain. In Adventure Mode, players must complete specific objectives to unlock subsequent levels.
+
+Design and implement special gameplay elements to increase difficulty and strategic depth. These elements include Bomb Blocks, which cause an immediate level failure when cleared, and Ice Blocks, which require being cleared twice before they are removed from the board.
+
+Develop a level management system that supports predefined level data, level progression, score targets, special blocks, and player progress saving.
+
+Develop an intuitive and user-friendly interface that enables players to interact with the game easily, including game mode selection, level selection, score display, and game settings.
+
+Conduct testing and evaluation to ensure the correctness, usability, and stability of the implemented game mechanics and systems.
+
+Refine and optimize the game based on testing results to improve gameplay balance and overall user experience.
+
+By addressing these objectives, this research aims to contribute to the development of casual puzzle games by demonstrating the design and implementation of a level-based block puzzle system with special gameplay mechanics, while providing insights and recommendations for future game development.
+
+In conclusion, this introduction has established the background and objectives of the thesis. The following chapters will present the methodology, system design, implementation, testing, and evaluation of the developed game, providing a comprehensive analysis of the gameplay mechanics, level system, special block interactions, and user experience.
+
+
+
+\chapter{OBJECTIVES}
+The objective of this project is to develop a 2D mobile block puzzle game that combines strategic gameplay mechanics, special block interactions, and level-based progression to deliver an engaging and enjoyable player experience. The project aims to apply knowledge gained from Software Engineering, Object-Oriented Programming, and Data Structures and Algorithms throughout the game development process.
+
+Software Engineering principles are utilized to analyze requirements, design the game architecture, and manage the development process systematically. Object-Oriented Programming concepts are applied to create modular and reusable game components such as blocks, levels, game managers, and user interface systems. In addition, Data Structures and Algorithms are employed to manage the game grid, validate block placements, detect completed rows and columns, calculate scores, and support level progression efficiently.
+
+Through the design, implementation, and evaluation of the game, the project seeks to demonstrate how Software Engineering, Object-Oriented Programming, and Data Structures and Algorithms can be integrated to develop a functional, maintainable, and engaging mobile puzzle game.
+
+\chapter{MATERIALS AND METHODS}
+\section{Development process}
+Every studio must adhere to the development process if they hope to produce a quality game. Since this process is iterative, certain features may sound great on paper but malfunction once they are created.Iterative development is a good thing because it indicates the game's creators are constantly working to improve or update their original concepts. Five distinct phases make up the game development process:
+\begin{enumerate}
+    \item The player selects \textbf{Pre-Production:} In this phase, the game designer creates the game by writing a Game Design Document (GDD) for development members. They will read and follow to create the prototype that the game designer wants. Development team should come up with a playable prototype to demonstrate the game clearly.
+    
+    \item \textbf{Production:} In this phase is the main stage of the development. Assets and source code for the game are produced. Team members will start with source code, graphics design and sound. This phase usually ends with the alpha version of the game. The alpha version will feature a complete game, all gameplay elements and some basic sfx and particles. Some change or improvement will be added in the future of the development process.
+    
+    \item \textbf{Beta phase:} This version will feature bug fixing from the feedback of testers. No new major changes will be added, when this phase is complete it means that the game is fully playable with no minor bugs.
+    
+    \item \textbf{Post production:} When the game is finished, the business team will start publicity and the marketing team will advertise the game. During this phase, the team will collect data, feedback from users and release patches with bug fixing or adding new features.
+
+\end{enumerate}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{game dev process.png}
+    \caption{Game development process}
+    \label{fig:placeholder}
+\end{figure}
+
+This project is for individuals so I will cover all the development process. First I will
+research a document about game development. Reading Unity docs to understand the
+workflow, watch tutorials on Youtube to learn the basics.
+
+\section{Project Detail}
+\subsection{Requirements}
+The main requirements for this project are to learn how to design and develop a mobile game, including pre-production, production and post-production. Throughout this project, one will have the opportunity to learn various skills, including creating game assets from scratch, composing game music, scripting, designing levels, and developing user interfaces.
+\subsection{Specifications}
+This project will use some of the software to develop the game.
+\begin{table}[H]
+\centering
+\label{tab:software_tools}
+\begin{tabular}{|p{5cm}|p{8cm}|}
+\hline
+\textbf{Software} & \textbf{Purpose} \\ \hline
+
+Unity (2022.3.62f3 LTS) &
+Game engine used to develop the game, implement gameplay mechanics, user interface, and level system. \\ \hline
+
+Figma &
+Design user interfaces, icons, and visual layouts for the game. \\ \hline
+
+Visual Studio Code &
+C\# scripting, debugging, and project development. \\ \hline
+
+Git \& GitHub &
+Version control, source code management, and project collaboration. \\ \hline
+\end{tabular}
+\caption{Software and Tools Used in the Project}
+\end{table}
+
+
+
+\subsection{Development process}
+This table will show different phases during the development process and the output of that phase.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3.5cm}|p{6cm}|p{3cm}|}
+\hline
+\textbf{Phase} & \textbf{Output} & \textbf{Date} \\ \hline
+
+Pre-production &
+Game idea, game style, gameplay, 2D assets &
+01 / 04 / 2026 \\ \hline
+
+Production &
+Scripting, Functional gameplay, mechanics &
+01 / 05 / 2026 \\ \hline
+
+Beta &
+Play test and Bug fixing &
+01 / 06 / 2026 \\ \hline
+
+Post production &
+Final report &
+01 / 07 / 2026 \\ \hline
+
+\end{tabular}
+\caption{Project Development Schedule}
+\label{tab:development_schedule}
+\end{table}
+
+\section{Game Design Document}
+\subsection{Introduction}
+"2D Block Puzzle" is a 2D mobile puzzle game for mobile, developed in Unity 2D with 2D simple art style.  Players will have to drag and place blocks onto the game board. When a complete row or column is filled, it will be cleared from the board, creating more available space and increasing the player's score or progress.
+\subsection{Gameplay}
+The game features two gameplay modes: \textbf{Classic Mode} and \textbf{Adventure Mode}. In Classic Mode, players continue playing for as long as possible to achieve the highest score before losing. In Adventure Mode, players progress through multiple levels and must complete the target objective of each level to advance to the next one. Moreover, special blocks are introduced to increase the challenge. \textbf{Bomb Blocks} immediately end the level when cleared, while \textbf{Ice Blocks} require two successful clears before being removed from the board. These mechanics encourage players to plan their moves carefully and adapt their strategies to different level objectives.
+
+During gameplay, three blocks are provided at the bottom of the screen. Players must drag and place these blocks onto the game board. When a complete row or column is filled, it will be cleared from the board, creating more available space and increasing the player's score or progress. The game continues until there is no remaining space on the board to place any of the available blocks. At that point, the game ends.
+
+\subsection{User Interface}
+The player begins in the main menu screen, which has Play Classic Mode, Play Adventure mode and Setting. Setting will have 2 toggle button "Sound" and "BGM" understanding for Sound and Background Music. In-game user interface will have Score, several buttons, Level Target, Win Panel, Lose Panel.
+
+\begin{figure}[H]
+    \centering
+
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Main Menu.png}
+        \caption{Main Menu Screen}
+        \label{fig:mainmenu}
+    \end{minipage}
+    \hspace{0.03\textwidth}
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{InGame.png}
+        \caption{In-game Screen}
+        \label{fig:ingame}
+    \end{minipage}
+
+\end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Setting.png}
+    \caption{Setting Screen}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Blocks UI.png}
+    \caption{Normal Block - Bomb Block - Ice Block}
+    \label{fig:placeholder}
+\end{figure}
+
+\chapter{ SYSTEM ANALYSIS}
+\section{Use Case Diagram}
+\subsection{Player use case}
+The use case diagram in Figure 3 depicts the interactions between the player and the game system. The player can choose to \textbf{Play Classic Mode}, \textbf{Play Adventure Mode}, and \textbf{Open the Settings menu}.
+
+\textbf{The Classic Mode} includes \textbf{controlling blocks} to achieve the highest possible score. During gameplay, the player can drag and place blocks on the game board. The player may also \textbf{restart the current game} or \textbf{exit the Classic Mode}.
+
+\textbf{The Adventure Mode} includes \textbf{selecting a level} and \textbf{controlling blocks} to complete level objectives. Similar to Classic Mode, the player can drag and place blocks on the game board. During gameplay, the player may \textbf{restart the current level} or \textbf{exit the level} at any time.
+
+\textbf{The Settings menu} allows the player to \textbf{manage audio preferences}. The available options include \textbf{toggling background music} and \textbf{toggling sound effects}.
+
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Use Case Diagram.png}
+    \caption{Player use case diagram}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\section{Sequence diagram}
+\subsection{Play Classic Mode}
+\begin{itemize}
+    \item \textbf{Player }(Actor)
+    \item \textbf{Menu }(User Interface for Game Mode Selection)
+    \item \textbf{System }(Process Player Requests)
+    \item \textbf{Game Board }(Gameplay Area)
+\end{itemize}
+
+The player selects \textbf{Classic Mode} from the Menu. The system initializes the game board and prepares a new Classic Mode session before displaying the game screen.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{Play Classic Mode Sequence Diagram.png}
+    \caption{Sequence diagram for Play Classic Mode}
+    \label{fig:placeholder}
+\end{figure}
+
+\newpage
+\subsection{Restart Classic Game}
+\begin{itemize}
+    \item \textbf{Player }(Actor)
+    \item \textbf{Game Screen }(Gameplay Interface)
+    \item \textbf{System }(Process Restart Requests)
+    \item \textbf{Game Board }(Gameplay Area)
+\end{itemize}
+
+The player chooses to \textbf{Restart Classic Game}. The system initializes a new game board and starts a fresh Classic Mode session before displaying the new game screen.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{Restart Classic game Sequence Diagram.png}
+    \caption{Sequence diagram for Restart Classic Game}
+    \label{fig:placeholder}
+\end{figure}
+
+\newpage
+\subsection{Play Adventure Mode \& Select level}
+\begin{itemize}
+    \item \textbf{Player }(Actor)
+    \item \textbf{Menu }(User Interface for Game Mode Selection)
+    \item \textbf{System }(Process Player Requests)
+    \item \textbf{Data }(Store Level Information)
+    \item \textbf{Game Board }(Gameplay Area)
+\end{itemize}
+
+The player selects \textbf{Adventure Mode} from the Menu. The system loads the available levels, allows the player to choose a level, and initializes the selected level before displaying the game screen.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{Play Adventure_Select Level Sequence Diagram.png}
+    \caption{Sequence diagram for Play Adventure Mode \& Select level}
+    \label{fig:placeholder}
+\end{figure}
+
+\newpage
+\subsection{Restart Level}
+\begin{itemize}
+    \item \textbf{Player }(Actor)
+    \item \textbf{Game Screen }(Gameplay Interface)
+    \item \textbf{System }(Process Restart Requests)
+    \item \textbf{Data }(Store Level Data)
+    \item \textbf{Game Board }(Gameplay Area)
+\end{itemize}
+
+The player chooses to \textbf{Restart Level}. The system reloads the current level data and resets the game board before displaying the restarted level.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{Restart Level Sequence Diagram.png}
+    \caption{Sequence diagram for Restart Level}
+    \label{fig:placeholder}
+\end{figure}
+
+\newpage
+\subsection{Control Block}
+\begin{itemize}
+    \item \textbf{Player }(Actor)
+    \item \textbf{Game Board }(Gameplay Area)
+    \item \textbf{System }(Validate Block Placement)
+\end{itemize}
+
+The player drags and places a block on the game board. The system tracks the block position and validates the placement.
+
+\begin{enumerate}
+    \item If the position is valid, the block is placed on the board and the game board is updated.
+    \item If the position is invalid, the block returns to its original position.
+\end{enumerate}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{Control Block Sequence Diagram.png}
+    \caption{Sequence diagram for Control Block}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\newpage
+\subsection{Setting}
+\begin{itemize}
+    \item \textbf{Player }(Actor)
+    \item \textbf{Menu }(Navigation Interface)
+    \item \textbf{Menu Interface }(Settings Screen)
+    \item \textbf{System }(Process Setting Changes)
+    \item \textbf{Data }(Store Game Settings)
+\end{itemize}
+
+The player opens the \textbf{Settings} screen from the Menu. In the Settings interface, the player can modify Music and Sound settings. The system saves the selected settings and updates the configuration.
+
+\begin{enumerate}
+    \item The player changes the Music setting.
+    \item The player changes the Sound setting.
+\end{enumerate}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{Setting Sequence Diagram.png}
+    \caption{Sequence diagram for Setting}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\newpage
+\section{Data System / Class Diagram}
+All the game data is kept in the GameplayManager.cs. There are multiple managers for different aspects of the game. (ex: InventoryManager, NetWorkManager, MissionManager, etc).
+\subsection{GameplayManager database}
+These class diagrams represent the database of some essential systems of the game.
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1.1\linewidth]{class diagram.png}
+    \caption{Class Diagram}
+    \label{fig:placeholder}
+\end{figure}
+
+\newpage
+\section{Data-Level Implementation}
+\subsection{Level data storage with Scriptable Objects}
+The level system is implemented using Unity \textbf{Scriptable Objects}, specifically through the \texttt{LevelData} asset. This approach separates level content from gameplay logic, making each level easy to configure, reuse, and maintain without modifying the core source code. Each \texttt{LevelData} asset stores the level identifier, display name, target score, pre-placed board cells, and the opening block set for the beginning of the level.
+
+From the system perspective, the \texttt{LevelSystemManager} loads these assets either from inspector references or from the \texttt{Resources/Levels} folder. After loading, the level assets are sorted by \texttt{levelId}, and the selected level is used to initialize the board state, target score, and the first batch of draggable blocks.
+
+\subsection{8x8 grid matrix representation}
+The board is modeled as a fixed \textbf{8x8 grid matrix}. In the level data layer, this matrix is represented by two synchronized arrays:
+\begin{itemize}
+    \item \texttt{prePlacedGrid}: stores whether a cell is occupied.
+    \item \texttt{prePlacedBlockTypes}: stores the special type assigned to that occupied cell.
+\end{itemize}
+
+For report interpretation, this 8x8 structure can be viewed as a symbolic matrix where each occupied cell carries a semantic label. Conceptually, the grid can be written as:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|p{8cm}|}
+\hline
+\textbf{Symbol} & \textbf{Implementation Type} & \textbf{Meaning} \\ \hline
+\texttt{N} & \texttt{BlockType.Normal} & A standard occupied cell with no special behavior. \\ \hline
+\texttt{I} & \texttt{BlockType.Ice} & A two-layer ice cell that must be cleared twice before disappearing. \\ \hline
+\texttt{B} & \texttt{BlockType.Bomb} & A bomb cell that immediately triggers level failure when its full row or column is cleared. \\ \hline
+\end{tabular}
+\caption{Conceptual block-type representation in the 8x8 level matrix}
+\label{tab:block_type_representation}
+\end{table}
+
+Although the actual code uses the \texttt{BlockType} enumeration instead of raw characters, the \texttt{N/I/B} notation is useful for explaining and designing levels in a compact and readable way.
+
+\subsection{Level initialization pipeline}
+When an Adventure Mode level starts, the initialization pipeline executes in three main steps:
+\begin{enumerate}
+    \item The selected \texttt{LevelData} asset provides the target score and pre-placed cell configuration.
+    \item The \texttt{Board} receives each configured cell through \texttt{TryPrePlaceCell()}, which marks the grid as occupied and assigns the correct block type.
+    \item The system optionally injects the first three draggable blocks from level data before returning to the normal adaptive block generation logic.
+\end{enumerate}
+
+This design keeps the gameplay loop independent from level authoring. Designers can prepare puzzle layouts directly in data assets, while the board logic only focuses on validation, placement, clearing, and state transitions.
+
+\section{Core Mechanics: Ice Block and Bomb Block}
+\subsection{Ice Block implementation and behavior}
+Ice Blocks are implemented as occupied board cells whose type is stored as \texttt{BlockType.Ice}. In the runtime board model, an additional matrix named \texttt{iceLayers} stores the durability of each ice cell. When an Ice Block is placed at level start, its layer count is initialized to \textbf{2}.
+
+The behavior of an Ice Block is resolved during line-clearing:
+\begin{enumerate}
+    \item If a completed row or column contains an Ice Block and its remaining layer count is greater than one, the cell is \textbf{not removed immediately}.
+    \item Instead, the system decreases its layer count by one, converts its logical type from \texttt{Ice} to \texttt{Normal}, and refreshes the sprite on the board.
+    \item When that same cell is cleared again later as a normal occupied cell, it is finally removed from the board and becomes empty.
+\end{enumerate}
+
+This creates a two-phase destruction mechanic. The first clear breaks the ice shell, while the second clear fully frees the grid space. As a result, Ice Blocks increase planning complexity because clearing a line once is not always enough to recover board space.
+
+\subsection{Bomb Block implementation and behavior}
+Bomb Blocks are implemented as occupied cells of type \texttt{BlockType.Bomb}. Their logic is handled before the standard line-clear reward is applied. After the board identifies which rows and columns are complete, it explicitly checks whether any of those completed lines contain a Bomb Block.
+
+If a bomb is found in any cleared row or column:
+\begin{enumerate}
+    \item The board sets the internal \texttt{forcedGameOver} flag to \texttt{true}.
+    \item Normal line clearing is interrupted.
+    \item The score reward for that clear is not applied.
+    \item The higher-level game state managers interpret this condition as an immediate loss.
+\end{enumerate}
+
+Therefore, Bomb Blocks function as a fail-trigger rather than as a removable obstacle. Their presence changes the player's strategy significantly, because a visually beneficial line completion may actually end the run instantly.
+
+\subsection{Comparison of gameplay roles}
+\begin{itemize}
+    \item \textbf{Ice Block:} delays board recovery by requiring two successful clears.
+    \item \textbf{Bomb Block:} transforms a line clear into an instant failure condition.
+\end{itemize}
+
+From a design standpoint, Ice Blocks increase \textbf{attrition pressure}, while Bomb Blocks introduce \textbf{risk pressure}. Together, they make the Adventure Mode more tactical than a standard endless block puzzle.
+
+\section{Core Game Algorithms}
+\subsection{Level Completion Check}
+The level completion algorithm is managed primarily by \texttt{LevelSystemManager}. In Adventure Mode, the system continuously compares the \texttt{currentScore} against the level's \texttt{targetScore}. This happens in two complementary ways:
+\begin{itemize}
+    \item through the per-frame gameplay update loop, and
+    \item immediately after each score update via the \texttt{ScoreChanged} event.
+\end{itemize}
+
+At a high level, the logic can be summarized as follows:
+\begin{enumerate}
+    \item Start the selected level and load its target score.
+    \item After every scoring event, check whether \texttt{currentScore >= targetScore}.
+    \item If the condition is true, mark the level as cleared, stop block interaction, unlock the next level, and show the completion panel.
+    \item If the player cannot place any remaining block, or if a Bomb Block has triggered \texttt{forcedGameOver}, the system resolves the session as a failure unless the target had already been reached.
+    \item In Classic Mode, there is no target score, so the same loss-detection logic only produces a game over state instead of a level completion check.
+\end{enumerate}
+
+This design ensures that victory is detected immediately once the score threshold is reached, while failure is detected when no legal move remains or when a bomb line is activated.
+
+\subsection{Score Calculation}
+The score algorithm is intentionally simple and deterministic. The board first detects the set of full rows and full columns caused by the latest placement. The total number of cleared lines is then calculated as:
+\[
+\text{clearedLineCount} = \text{fullLineRows.Count} + \text{fullLineColumns.Count}
+\]
+
+If no Bomb Block is present in the triggered lines, the board clears the affected cells and awards score using:
+\[
+\text{pointsAwarded} = \text{clearedLineCount} \times \text{PointsPerClearedLine}
+\]
+
+The \texttt{ScoreManager} then:
+\begin{enumerate}
+    \item adds the awarded points to \texttt{currentScore},
+    \item compares the new score with \texttt{highScore},
+    \item updates the saved high score in \texttt{PlayerPrefs} if a new record is reached, and
+    \item refreshes the score text shown in the user interface.
+\end{enumerate}
+
+This algorithm provides a clear reward model: more simultaneous line clears produce proportionally higher score gains, while high-score persistence is handled automatically as part of the same update path.
+
+\subsection{Drag and Drop Mechanism}
+The drag-and-drop system is implemented in the \texttt{Block} class using Unity mouse input callbacks. Each draggable block stores its current polyomino shape and translates pointer movement into world-space motion.
+
+The interaction pipeline is as follows:
+\begin{enumerate}
+    \item On mouse press, the block caches the initial pointer position, lifts the block visually upward, enlarges it for feedback, and requests a hover preview from the board.
+    \item During dragging, the system computes the pointer delta in world coordinates and updates the block position smoothly.
+    \item The dragged shape is converted into a board anchor point by rounding the world position relative to the shape center.
+    \item Whenever the anchor point changes, the board recalculates the hover overlay and predicted line highlights.
+    \item On mouse release, the system attempts placement. If the placement is valid, the block is consumed and removed from the tray; otherwise, it snaps back to its original position.
+\end{enumerate}
+
+This mechanism cleanly separates responsibilities: the \texttt{Block} script handles input and visual movement, while the \texttt{Board} script handles spatial validation and board-state updates.
+
+\subsection{Valid and Invalid Block Placement}
+Placement validity is determined by checking whether every occupied tile of the dragged polyomino can map onto an empty and in-bounds board cell.
+
+The algorithm used by the board is:
+\begin{enumerate}
+    \item Iterate through every filled cell of the chosen polyomino shape.
+    \item Convert each local shape cell into a board coordinate using the proposed anchor point.
+    \item Reject the placement immediately if any coordinate is outside the 8x8 board.
+    \item Reject the placement if any target board cell is already occupied.
+    \item Accept the placement only if all mapped cells satisfy both constraints.
+\end{enumerate}
+
+The same principle is reused for full-board feasibility checking. The method \texttt{CheckPlace(int polyominoIndex)} scans all possible anchor positions on the 8x8 grid and returns \texttt{true} as soon as one legal placement exists. This algorithm is essential not only for validating the player's current drag action, but also for detecting the lose state when none of the remaining blocks can be placed anymore.
+
+\subsection{Algorithmic summary}
+Taken together, these systems form a layered gameplay pipeline:
+\begin{itemize}
+    \item \textbf{Input layer:} captures drag actions and converts them into candidate board positions.
+    \item \textbf{Validation layer:} checks collision, bounds, and legal placement conditions.
+    \item \textbf{Resolution layer:} commits the placement, detects complete lines, resolves Ice/Bomb effects, and awards score.
+    \item \textbf{Progression layer:} evaluates win/lose conditions and updates level-unlock persistence.
+\end{itemize}
+
+This separation of concerns improves maintainability and makes the implemented game logic easier to extend with future mechanics such as boosters, new special blocks, or alternative level objectives.
+
+\newpage
+\section{Game Flow}
+The following diagram describes the flow of the game:
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Game Flow Activity Diagram.png}
+    \caption{Game Flow Activity Diagram}
+    \label{fig:placeholder}
+\end{figure}
+
+\chapter{RESULTS AND CONCLUSIONS}
+After 3 months of development, \textbf{Block Adventure} is playable on mobile with the following features:
+
+\begin{enumerate}
+    \item Stable gameplay, good performance, and good game feel for mobile users.
+    \item \textbf{Save-load system:} The game automatically saves the player's progress and high score so that the player will not lose current progress.
+    \item \textbf{Level system with special blocks:} The level system includes special blocks to make each level more challenging for players.
+    \item \textbf{Audio system:} The system handles and controls audio, including sound effects and background music, to provide players with a better experience.
+\end{enumerate}
+
+During the development process, I faced many difficulties:
+
+\begin{enumerate}
+    \item Developing a complete game within 3 months as an individual developer.
+    \item Learning about game feel and user experience, then applying them to the project.
+    \item Playtesting the game and fixing many bugs.
+\end{enumerate}
+\section{Project management}
+Game development is challenging for less experienced students (such as game designers, programmers, artists and sound engineers). Especially when you are new to software for game development. By developing a game from scratch and self-managing the project, students can apply it to future work in companies.
+\section{Game implementation}
+Students faced many difficulties during the game development process. Without proper planning and time management, a project of this scale can become challenging and time-consuming to complete.
+
+One of the main difficulties was designing and implementing the core gameplay mechanics. Although the game appears simple, creating a satisfying gameplay experience required significant effort in balancing scoring systems, block generation, and board interactions. Special attention was given to ensuring that the game remained both challenging and enjoyable for players.
+
+Another challenge was the development of the Adventure Mode. The level system required the creation of predefined level data, target objectives, and special blocks such as Bomb Blocks and Ice Blocks. Designing levels with increasing difficulty while maintaining fairness and playability required extensive testing and iteration.
+
+In addition, considerable time was spent improving the user experience. Elements such as drag-and-drop controls, visual feedback, animations, sound effects, and user interface design had to be refined to provide a smooth and responsive gameplay experience on mobile devices.
+
+The testing phase also presented several challenges. Numerous bugs related to gameplay logic, level progression, score calculation, and data persistence were discovered during playtesting. These issues required continuous debugging and optimization to ensure the stability and reliability of the game.
+
+Despite these difficulties, the project was successfully completed within the planned development period. The experience gained throughout the implementation process significantly improved the student's knowledge of game development, software design, debugging, and project management.
+
+\chapter{FUTURE WORK}
+Although the current version of \textbf{Block Adventure} provides a complete and enjoyable gameplay experience, there are still several features that can be implemented and improved in the future.
+
+First, we plan to introduce more special block types to increase the difficulty and variety of later levels. These special blocks will require players to develop new strategies and adapt their gameplay to overcome increasingly challenging obstacles.
+
+In addition, we intend to implement a booster system, which is currently not available in the game. Since special blocks can significantly increase the difficulty of a level, boosters will provide players with additional tools to overcome difficult situations and improve the overall game experience. Examples of planned boosters include a \textbf{Heart Booster}, which allows the player to survive after clearing a Bomb Block instead of losing immediately, and a \textbf{Hammer Booster}, which can remove an unwanted block from the board. Additional boosters may also be added to support different gameplay scenarios and level designs.
+
+Furthermore, we plan to design more levels with diverse objectives and mechanics to enhance replayability and maintain player engagement throughout the game. The level progression system can also be expanded with new challenges and rewards to encourage long-term play.
+
+Finally, future development will focus on balancing gameplay, improving user experience, optimizing performance on mobile devices, and publishing the game on digital distribution platforms to reach a wider audience.
+
+
+\end{document}

@@ -8,14 +8,26 @@ public class Board : MonoBehaviour
     [SerializeField] private Cell cellPrefab;
     [SerializeField] private Transform cellsTransform;
 
+    [Header("Special Block Visuals")]
+    [SerializeField] private Sprite iceBlockSprite;
+    [SerializeField] private Sprite bombBlockSprite;
+    [SerializeField, Min(0.1f)] private float iceBlockScaleMultiplier = 0.8f;
+    [SerializeField, Min(0.1f)] private float bombBlockScaleMultiplier = 0.8f;
+
     private readonly Cell[,] cells = new Cell[Size, Size];
     private readonly int[,] data = new int[Size, Size]; // 0 Emty, 1 Hover, 2 Normal
+    private readonly BlockType[,] blockTypes = new BlockType[Size, Size];
+    private readonly int[,] iceLayers = new int[Size, Size];
 
     private readonly List<Vector2Int> hoverPoints = new();
     private readonly List<int> highlightPolyominoColumns = new();
     private readonly List<int> highlightPolyominoRows = new();
     private readonly List<int> fullLineColumns = new();
     private readonly List<int> fullLineRows = new();
+
+    private bool forcedGameOver;
+
+    public bool HasForcedGameOver => forcedGameOver;
 
     private void Awake()
     {
@@ -142,6 +154,7 @@ public class Board : MonoBehaviour
         if (hoverPoints.Count > 0)
         {
             Place(point, polyominoColumns, polyominoRows);
+            AudioSettingsManager.Instance?.PlayPlaceSound();
             return true;
         }
 
@@ -152,8 +165,7 @@ public class Board : MonoBehaviour
     {
         foreach (var hoverPoint in hoverPoints)
         {
-            data[hoverPoint.y, hoverPoint.x] = 2;
-            cells[hoverPoint.y, hoverPoint.x].Normal();
+            SetOccupiedCell(hoverPoint.y, hoverPoint.x, BlockType.Normal);
         }
 
         ClearFullLines(point, polyominoColumns, polyominoRows);
@@ -166,10 +178,22 @@ public class Board : MonoBehaviour
         FullLineColumns(point.x, point.x + polyominoColumns);
         FullLineRows(point.y, point.y + polyominoRows);
 
-        ClearFullLineColumns();
-        ClearFullLineRows();
-
         var clearedLineCount = fullLineColumns.Count + fullLineRows.Count;
+        if (clearedLineCount <= 0)
+        {
+            return;
+        }
+
+        if (TriggeredBombLine())
+        {
+            AudioSettingsManager.Instance?.PlayBombSound();
+            forcedGameOver = true;
+            return;
+        }
+
+        ClearTriggeredCells();
+        AudioSettingsManager.Instance?.PlayClearSound();
+
         if (clearedLineCount > 0 && ScoreManager.Instance != null)
         {
             ScoreManager.Instance.AddScore(clearedLineCount * ScoreManager.Instance.PointsPerClearedLine);
@@ -224,8 +248,7 @@ public class Board : MonoBehaviour
         {
             for (var r = 0; r < Size; ++r)
             {
-                data[r, c] = 0;
-                cells[r, c].Hide();
+                ClearCell(r, c);
             }
         }
     }
@@ -235,10 +258,89 @@ public class Board : MonoBehaviour
         {
             for (var c = 0; c < Size; ++c)
             {
-                data[r, c] = 0;
-                cells[r, c].Hide();
+                ClearCell(r, c);
             }
         }
+    }
+
+    private bool TriggeredBombLine()
+    {
+        foreach (var column in fullLineColumns)
+        {
+            if (LineContainsBomb(column, isColumn: true))
+            {
+                return true;
+            }
+        }
+
+        foreach (var row in fullLineRows)
+        {
+            if (LineContainsBomb(row, isColumn: false))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool LineContainsBomb(int lineIndex, bool isColumn)
+    {
+        for (var offset = 0; offset < Size; ++offset)
+        {
+            var row = isColumn ? offset : lineIndex;
+            var column = isColumn ? lineIndex : offset;
+            if (data[row, column] == 2 && blockTypes[row, column] == BlockType.Bomb)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ClearTriggeredCells()
+    {
+        var clearedPoints = new HashSet<Vector2Int>();
+
+        foreach (var column in fullLineColumns)
+        {
+            for (var row = 0; row < Size; ++row)
+            {
+                clearedPoints.Add(new Vector2Int(column, row));
+            }
+        }
+
+        foreach (var row in fullLineRows)
+        {
+            for (var column = 0; column < Size; ++column)
+            {
+                clearedPoints.Add(new Vector2Int(column, row));
+            }
+        }
+
+        foreach (var point in clearedPoints)
+        {
+            ResolveClearedCell(point.y, point.x);
+        }
+    }
+
+    private void ResolveClearedCell(int row, int column)
+    {
+        if (data[row, column] != 2)
+        {
+            return;
+        }
+
+        if (blockTypes[row, column] == BlockType.Ice && iceLayers[row, column] > 1)
+        {
+            iceLayers[row, column] -= 1;
+            blockTypes[row, column] = BlockType.Normal;
+            RefreshOccupiedCellVisual(row, column);
+            return;
+        }
+
+        ClearCell(row, column);
     }
 
     private void Highlight(Vector2Int point, int polyominoColumns, int polyominoRows)
@@ -331,7 +433,7 @@ public class Board : MonoBehaviour
             {
                 if (data[r, c] == 2)
                 {
-                    cells[r, c].Normal();
+                    RefreshOccupiedCellVisual(r, c);
                 }
             }
         }
@@ -344,10 +446,76 @@ public class Board : MonoBehaviour
             {
                 if (data[r, c] == 2)
                 {
-                    cells[r, c].Normal();
+                    RefreshOccupiedCellVisual(r, c);
                 }
             }
         }
+    }
+
+    public void ClearBoardState()
+    {
+        hoverPoints.Clear();
+        highlightPolyominoColumns.Clear();
+        highlightPolyominoRows.Clear();
+        fullLineColumns.Clear();
+        fullLineRows.Clear();
+        forcedGameOver = false;
+
+        for (var r = 0; r < Size; ++r)
+        {
+            for (var c = 0; c < Size; ++c)
+            {
+                ClearCell(r, c);
+            }
+        }
+    }
+
+    public bool TryPrePlaceCell(Vector2Int point)
+    {
+        return TryPrePlaceCell(point, BlockType.Normal);
+    }
+
+    public bool TryPrePlaceCell(Vector2Int point, BlockType blockType)
+    {
+        if (point.x < 0 || point.x >= Size) return false;
+        if (point.y < 0 || point.y >= Size) return false;
+        if (data[point.y, point.x] != 0) return false;
+
+        SetOccupiedCell(point.y, point.x, blockType);
+        return true;
+    }
+
+    public bool TryPrePlacePolyomino(Vector2Int origin, int polyominoIndex)
+    {
+        var polyomino = Polyominos.Get(polyominoIndex);
+        var polyominoRows = polyomino.GetLength(0);
+        var polyominoColumns = polyomino.GetLength(1);
+        var points = new List<Vector2Int>();
+
+        for (var r = 0; r < polyominoRows; ++r)
+        {
+            for (var c = 0; c < polyominoColumns; ++c)
+            {
+                if (polyomino[r, c] <= 0)
+                {
+                    continue;
+                }
+
+                var point = origin + new Vector2Int(c, r);
+                if (point.x < 0 || point.x >= Size) return false;
+                if (point.y < 0 || point.y >= Size) return false;
+                if (data[point.y, point.x] != 0) return false;
+
+                points.Add(point);
+            }
+        }
+
+        foreach (var point in points)
+        {
+            SetOccupiedCell(point.y, point.x, BlockType.Normal);
+        }
+
+        return true;
     }
 
     public bool CheckPlace(int polyominoIndex)
@@ -384,6 +552,67 @@ public class Board : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void SetOccupiedCell(int row, int column, BlockType blockType)
+    {
+        data[row, column] = 2;
+        blockTypes[row, column] = blockType;
+        iceLayers[row, column] = blockType == BlockType.Ice ? 2 : 0;
+        RefreshOccupiedCellVisual(row, column);
+    }
+
+    private void RefreshOccupiedCellVisual(int row, int column)
+    {
+        if (cells[row, column] == null)
+        {
+            return;
+        }
+
+        cells[row, column].ShowPlaced(
+            blockTypes[row, column],
+            iceBlockSprite,
+            bombBlockSprite,
+            GetScaleMultiplier(blockTypes[row, column]));
+    }
+
+    private void ClearCell(int row, int column)
+    {
+        data[row, column] = 0;
+        blockTypes[row, column] = BlockType.Normal;
+        iceLayers[row, column] = 0;
+
+        if (cells[row, column] != null)
+        {
+            cells[row, column].Hide();
+        }
+    }
+
+    private float GetScaleMultiplier(BlockType blockType)
+    {
+        switch (blockType)
+        {
+            case BlockType.Ice:
+                return iceBlockScaleMultiplier;
+            case BlockType.Bomb:
+                return bombBlockScaleMultiplier;
+            default:
+                return 1.0f;
+        }
+    }
+
+    public int[,] GetOccupiedGridCopy()
+    {
+        var copy = new int[Size, Size];
+        for (var r = 0; r < Size; ++r)
+        {
+            for (var c = 0; c < Size; ++c)
+            {
+                copy[r, c] = data[r, c] == 2 ? 1 : 0;
+            }
+        }
+
+        return copy;
     }
 
     public List<int> HighlightPolyominoColumns => highlightPolyominoColumns;

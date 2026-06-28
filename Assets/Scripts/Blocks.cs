@@ -8,6 +8,8 @@ public class Blocks : MonoBehaviour
     [SerializeField] private Block[] blocks;
 
     private int[] polyominoIndexes;
+    private int[] queuedPolyominoIndexes;
+    private int[] nextBatchOverrideIndexes;
 
     private int blockCount = 0;
 
@@ -29,9 +31,14 @@ public class Blocks : MonoBehaviour
 
     private void Generate()
     {
+        blockCount = 0;
+
+        // Use the latest analyzed batch when available; otherwise build a fresh one
+        // from the board state right now.
+        var generatedIndexes = ConsumeQueuedBatch();
         for (var i = 0; i < blocks.Length; ++i)
         {
-            polyominoIndexes[i] = Random.Range(0, Polyominos.Length);
+            polyominoIndexes[i] = generatedIndexes[i];
             blocks[i].gameObject.SetActive(true);
             blocks[i].Show(polyominoIndexes[i]);
 
@@ -42,6 +49,20 @@ public class Blocks : MonoBehaviour
     public void Remove()
     {
         --blockCount;
+
+        if (board != null && board.HasForcedGameOver)
+        {
+            if (blockCount < 0)
+            {
+                blockCount = 0;
+            }
+
+            return;
+        }
+
+        // Rebuild the hidden next batch after every move using the latest board state.
+        queuedPolyominoIndexes = PieceGenerator.Generate(board, blocks.Length);
+
         if (blockCount <= 0)
         {
             blockCount = 0;
@@ -69,5 +90,41 @@ public class Blocks : MonoBehaviour
         {
             blocks[i].SetSortingOrder(0);
         }
+    }
+
+    public void SetNextBatchOverride(int[] overrideIndexes)
+    {
+        if (overrideIndexes == null || overrideIndexes.Length != blocks.Length)
+        {
+            nextBatchOverrideIndexes = null;
+            return;
+        }
+
+        nextBatchOverrideIndexes = (int[])overrideIndexes.Clone();
+    }
+
+    public void ClearPendingBatches()
+    {
+        nextBatchOverrideIndexes = null;
+        queuedPolyominoIndexes = null;
+    }
+
+    private int[] ConsumeQueuedBatch()
+    {
+        if (nextBatchOverrideIndexes != null && nextBatchOverrideIndexes.Length == blocks.Length)
+        {
+            var generatedIndexes = nextBatchOverrideIndexes;
+            nextBatchOverrideIndexes = null;
+            return generatedIndexes;
+        }
+
+        if (queuedPolyominoIndexes != null && queuedPolyominoIndexes.Length == blocks.Length)
+        {
+            var generatedIndexes = queuedPolyominoIndexes;
+            queuedPolyominoIndexes = null;
+            return generatedIndexes;
+        }
+
+        return PieceGenerator.Generate(board, blocks.Length);
     }
 }
